@@ -7,10 +7,13 @@ import { load, save } from './storage';
 import { ChatView } from './Chat';
 import { SettingsPanel, type SettingsValue } from './Settings';
 import { DEFAULT_MODEL, MODELS } from './claude';
+import { MyMoney } from './MyMoney';
+import { loadMoney, saveMoney, type MoneyData } from './money';
 
 const data = rawData as AgentData;
 const divisionById = new Map<string, Division>(data.divisions.map((d) => [d.id, d]));
 const agentById = new Map<string, Agent>(data.agents.map((a) => [a.id, a]));
+const personalAgents = data.agents.filter((a) => a.id.startsWith('finance-personal-'));
 
 type Filter = 'all' | 'favorites' | string;
 
@@ -21,6 +24,7 @@ function useHashRoute() {
     window.addEventListener('hashchange', onChange);
     return () => window.removeEventListener('hashchange', onChange);
   }, []);
+  if (hash === '#my-money') return { view: 'money' as const, id: '' };
   const m = hash.match(/^#(agent|chat)-(.+)$/);
   return m ? { view: m[1] as 'agent' | 'chat', id: decodeURIComponent(m[2]) } : null;
 }
@@ -37,6 +41,11 @@ export default function App() {
     save('aa.apiKey', v.apiKey);
     save('aa.model', v.model);
     setSettingsOpen(false);
+  };
+  const [money, setMoney] = useState<MoneyData>(loadMoney);
+  const changeMoney = (d: MoneyData) => {
+    setMoney(d);
+    saveMoney(d);
   };
   const askForKey = () => setSettingsOpen({ reason: 'Add your Claude API key to chat with agents.' });
   const settingsPanel = settingsOpen && (
@@ -65,12 +74,18 @@ export default function App() {
   }, [deferredQuery, filter, favorites]);
 
   const agent = route ? agentById.get(route.id) : undefined;
-  const view = agent ? route!.view : 'list';
+  const view = route?.view === 'money' ? 'money' : agent ? route!.view : 'list';
 
   useEffect(() => {
-    document.title = agent ? `${view === 'chat' ? 'Chat · ' : ''}${agent.name} · Agency Agents` : 'Agency Agents';
+    document.title =
+      view === 'money' ? 'My Money · Agency Agents'
+      : agent ? `${view === 'chat' ? 'Chat · ' : ''}${agent.name} · Agency Agents` : 'Agency Agents';
     window.scrollTo(0, 0);
   }, [agent, view]);
+
+  if (view === 'money') {
+    return <MyMoney data={money} onChange={changeMoney} personalAgents={personalAgents} />;
+  }
 
   if (agent && view === 'chat') {
     return (
@@ -82,6 +97,7 @@ export default function App() {
           apiKey={settings.apiKey}
           model={settings.model}
           onNeedKey={askForKey}
+          money={money}
         />
         {settingsPanel}
       </>
@@ -110,6 +126,7 @@ export default function App() {
             <h1>Agency Agents</h1>
             <p className="sub">{data.agents.length} AI specialists, ready to help</p>
           </div>
+          <a className="money-btn" href="#my-money">💵 My Money</a>
           <button className="settings-btn" onClick={() => setSettingsOpen({})} aria-label="Settings">
             <svg viewBox="0 0 24 24" aria-hidden>
               <path fill="currentColor" d="M19.4 13a7.5 7.5 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.3 7.3 0 0 0-1.7-1L15 3.5h-4l-.4 2.5a7.3 7.3 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7.5 7.5 0 0 0 0 2l-2 1.6 2 3.4 2.4-1c.5.4 1.1.7 1.7 1l.4 2.5h4l.4-2.5c.6-.3 1.2-.6 1.7-1l2.4 1 2-3.4-2-1.6ZM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z" transform="translate(-1 0)" />
