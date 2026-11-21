@@ -448,6 +448,13 @@ Accounting, financial analysis, tax strategy, and investment research specialist
 | 📈 [FP&A Analyst](finance/finance-fpa-analyst.md) | Budgeting, rolling forecasts, variance analysis, business reviews | Annual operating plans, monthly business reviews, strategic resource allocation |
 | 🔍 [Investment Researcher](finance/finance-investment-researcher.md) | Due diligence, portfolio analysis, asset valuation, equity research | Investment thesis development, risk assessment, market research |
 | 🏛️ [Tax Strategist](finance/finance-tax-strategist.md) | Tax optimization, multi-jurisdictional compliance, transfer pricing | Entity structuring, ETR analysis, audit defense, strategic tax planning |
+| 🪙 [Personal Budget Coach](finance/finance-personal-budget-coach.md) | Personal budgets, spending leaks, savings habits | Monthly budgets, irregular income, emergency funds |
+| 💳 [Debt & Credit Advisor](finance/finance-personal-debt-credit-advisor.md) | Debt payoff plans, credit scores, avoiding debt traps | Avalanche vs. snowball, utilization, balance transfers |
+| 🤖 [Trading Bot Strategy Reviewer](finance/finance-personal-trading-bot-reviewer.md) | Backtest audits, order handling, risk controls for personal trading bots | Reviewing Alpaca/ccxt bots before going live |
+| 📹 [Side-Income Tracker](finance/finance-personal-side-income-tracker.md) | Side-hustle and creator income, tax set-asides, $/hour | YouTube, freelancing, gig work record-keeping |
+| 🧾 [Personal Tax Helper](finance/finance-personal-tax-helper.md) | Individual US taxes, W-2 vs. 1099, withholding, filing prep | Avoiding surprise tax bills, document checklists |
+| 🚗 [Big Purchase Planner](finance/finance-personal-big-purchase-planner.md) | Total cost of ownership, financing offers, affordability | Cars, apartments, laptops, major purchases |
+| 🛡️ [Insurance & Benefits Explainer](finance/finance-personal-insurance-benefits-explainer.md) | Health, dental, auto, renters and workplace benefits | Plan comparisons, cost estimates, bill disputes |
 
 ### 🎮 Game Development Division
 

@@ -187,3 +187,66 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .send { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--c); color: #fff; font-size: 20px; font-weight: 700; }
 .send:disabled { opacity: 0.35; cursor: default; }
 .send.stop { font-size: 14px; background: var(--ink); color: var(--bg); }
+
+/* My Money */
+.money-btn { margin-left: auto; text-decoration: none; border: 1px solid var(--line); background: var(--panel); border-radius: 11px; height: 40px; padding: 0 12px; display: inline-flex; align-items: center; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.money-btn + .settings-btn { margin-left: 0; }
+.money { max-width: 860px; --c: #16A34A; }
+.money-title { margin: 0 0 6px; font-size: clamp(26px, 5vw, 34px); letter-spacing: -0.02em; }
+.muted { color: var(--muted); line-height: 1.5; }
+.small { font-size: 13px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin: 18px 0; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.stat span { color: var(--muted); font-size: 12.5px; }
+.stat strong { font-size: 20px; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.stat.good strong { color: #16A34A; }
+.stat.bad strong { color: #e03131; }
+.cats { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.cat-row { display: grid; grid-template-columns: 120px 1fr auto; gap: 10px; align-items: center; font-size: 13.5px; }
+.cat-bar { height: 8px; background: color-mix(in srgb, var(--ink) 8%, transparent); border-radius: 99px; overflow: hidden; }
+.cat-bar span { display: block; height: 100%; background: var(--c); border-radius: 99px; }
+.cat-val { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.money-section { margin-top: 26px; }
+.money-section h2, .money-agents h2 { font-size: 18px; margin: 0 0 2px; }
+.money-section > .muted { margin: 0 0 10px; }
+.rows { display: flex; flex-direction: column; gap: 8px; }
+.row { display: flex; gap: 8px; align-items: flex-start; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+.row-fields { flex: 1; display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.mini { display: flex; flex-direction: column; gap: 3px; font-size: 11.5px; color: var(--muted); min-width: 0; }
+.mini.grow { flex: 1 1 160px; }
+.mini.num { flex: 0 1 120px; }
+.mini input, .mini select { font: inherit; font-size: 16px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 9px; min-width: 0; width: 100%; }
+.mini select { width: auto; }
+.affix { display: flex; align-items: center; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
+.affix i { font-style: normal; color: var(--muted); font-size: 14px; padding: 0 2px 0 8px; }
+.affix i:last-child { padding: 0 8px 0 2px; }
+.affix input { border: 0; background: none; padding-left: 4px; }
+.mini input:focus, .mini select:focus, .affix:focus-within { outline: none; border-color: var(--c); }
+.affix input:focus { border: 0; }
+.remove { border: 0; background: none; color: var(--muted); font-size: 15px; padding: 6px; }
+.remove:hover { color: #e03131; }
+.add { align-self: flex-start; border: 1px dashed var(--line); background: none; border-radius: 10px; padding: 9px 14px; color: var(--c); font-weight: 600; font-size: 14px; }
+.progress { flex: 1 1 100%; position: relative; height: 18px; background: color-mix(in srgb, var(--ink) 8%, transparent); border-radius: 99px; overflow: hidden; }
+.progress span { display: block; height: 100%; background: var(--c); }
+.progress em { position: absolute; right: 8px; top: 0; line-height: 18px; font-size: 11px; font-style: normal; color: var(--ink); }
+.notes { width: 100%; font: inherit; font-size: 16px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--ink); resize: vertical; }
+.money-agents { margin-top: 28px; }
+.agent-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.agent-link { text-decoration: none; border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 8px 13px; font-size: 14px; }
+.agent-link:hover { border-color: var(--c); }
+.backup-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.backup-actions button { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 9px 14px; font-size: 14px; }
+.backup-actions .danger { color: #e03131; }
+
+/* Share bar in chat */
+.share-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 14px; border-bottom: 1px solid var(--line); background: var(--bg); }
+.share-chip { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 6px 12px; font-size: 13px; }
+.share-chip.on { background: color-mix(in srgb, var(--c) 15%, transparent); border-color: var(--c); font-weight: 600; }
+
+@media (max-width: 520px) {
+  .brand { flex-wrap: nowrap; }
+  .brand .sub { display: none; }
+  .money-btn { padding: 0 10px; font-size: 13px; }
+  .cat-row { grid-template-columns: 90px 1fr; }
+  .cat-val { grid-column: 2; margin-top: -4px; }
+}

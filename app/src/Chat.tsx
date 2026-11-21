@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import type { Agent, Division } from './types';
 import { ClaudeError, MODELS, streamChat, type ChatMessage } from './claude';
 import { load, save } from './storage';
+import { isEmpty, moneySnapshot, type MoneyData } from './money';
 
 const storageKey = (id: string) => `aa.chat.${id}`;
 
@@ -13,12 +14,18 @@ export function ChatView(props: {
   apiKey: string;
   model: string;
   onNeedKey: () => void;
+  money: MoneyData;
 }) {
   const { agent, division } = props;
   const [messages, setMessages] = useState<ChatMessage[]>(() => load(storageKey(agent.id), []));
   const [input, setInput] = useState('');
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState('');
+  const isPersonal = agent.id.startsWith('finance-personal-');
+  const hasMoney = !isEmpty(props.money);
+  const [share, setShare] = useState(() => load(`aa.share.${agent.id}`, isPersonal));
+  const sharing = share && hasMoney;
+  useEffect(() => save(`aa.share.${agent.id}`, share), [share, agent.id]);
   const abortRef = useRef<AbortController | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -61,7 +68,7 @@ export function ChatView(props: {
       await streamChat({
         apiKey: props.apiKey,
         model: props.model,
-        system: agent.body,
+        system: sharing ? `${agent.body}\n\n---\n\n${moneySnapshot(props.money)}` : agent.body,
         messages: history,
         signal: ctrl.signal,
         onText: (chunk) => {
@@ -109,6 +116,19 @@ export function ChatView(props: {
           New
         </button>
       </header>
+
+      {(hasMoney || isPersonal) && (
+        <div className="share-bar">
+          {hasMoney ? (
+            <button className={`share-chip${sharing ? ' on' : ''}`} onClick={() => setShare((v) => !v)} aria-pressed={sharing}>
+              📎 My Money {sharing ? 'shared' : 'not shared'}
+            </button>
+          ) : (
+            <span className="muted small">Add your numbers in <a href="#my-money">My Money</a> for personalized advice.</span>
+          )}
+          {sharing && <span className="muted small">This agent can see your snapshot.</span>}
+        </div>
+      )}
 
       <main className="chat-body">
         {messages.length === 0 && (
