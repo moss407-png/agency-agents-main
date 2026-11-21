@@ -4,6 +4,9 @@ import remarkGfm from 'remark-gfm';
 import rawData from './data/agents.json';
 import type { Agent, AgentData, Division } from './types';
 import { load, save } from './storage';
+import { ChatView } from './Chat';
+import { SettingsPanel, type SettingsValue } from './Settings';
+import { DEFAULT_MODEL, MODELS } from './claude';
 
 const data = rawData as AgentData;
 const divisionById = new Map<string, Division>(data.divisions.map((d) => [d.id, d]));
@@ -18,12 +21,27 @@ function useHashRoute() {
     window.addEventListener('hashchange', onChange);
     return () => window.removeEventListener('hashchange', onChange);
   }, []);
-  const m = hash.match(/^#agent-(.+)$/);
-  return m ? decodeURIComponent(m[1]) : null;
+  const m = hash.match(/^#(agent|chat)-(.+)$/);
+  return m ? { view: m[1] as 'agent' | 'chat', id: decodeURIComponent(m[2]) } : null;
 }
 
 export default function App() {
-  const agentId = useHashRoute();
+  const route = useHashRoute();
+  const [settings, setSettings] = useState<SettingsValue>(() => {
+    const model = load('aa.model', DEFAULT_MODEL);
+    return { apiKey: load('aa.apiKey', ''), model: MODELS.some((m) => m.id === model) ? model : DEFAULT_MODEL };
+  });
+  const [settingsOpen, setSettingsOpen] = useState<false | { reason?: string }>(false);
+  const saveSettings = (v: SettingsValue) => {
+    setSettings(v);
+    save('aa.apiKey', v.apiKey);
+    save('aa.model', v.model);
+    setSettingsOpen(false);
+  };
+  const askForKey = () => setSettingsOpen({ reason: 'Add your Claude API key to chat with agents.' });
+  const settingsPanel = settingsOpen && (
+    <SettingsPanel value={settings} onSave={saveSettings} onClose={() => setSettingsOpen(false)} reason={settingsOpen.reason} />
+  );
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>(() => load('aa.filter', 'all'));
   const [favorites, setFavorites] = useState<string[]>(() => load('aa.favorites', []));
@@ -46,20 +64,40 @@ export default function App() {
     });
   }, [deferredQuery, filter, favorites]);
 
-  const agent = agentId ? agentById.get(agentId) : undefined;
+  const agent = route ? agentById.get(route.id) : undefined;
+  const view = agent ? route!.view : 'list';
 
   useEffect(() => {
-    document.title = agent ? `${agent.name} · Agency Agents` : 'Agency Agents';
+    document.title = agent ? `${view === 'chat' ? 'Chat · ' : ''}${agent.name} · Agency Agents` : 'Agency Agents';
     window.scrollTo(0, 0);
-  }, [agent]);
+  }, [agent, view]);
+
+  if (agent && view === 'chat') {
+    return (
+      <>
+        <ChatView
+          key={agent.id}
+          agent={agent}
+          division={divisionById.get(agent.division)!}
+          apiKey={settings.apiKey}
+          model={settings.model}
+          onNeedKey={askForKey}
+        />
+        {settingsPanel}
+      </>
+    );
+  }
 
   if (agent) {
     return (
-      <AgentDetail
-        agent={agent}
-        isFavorite={favorites.includes(agent.id)}
-        onToggleFavorite={() => toggleFavorite(agent.id)}
-      />
+      <>
+        <AgentDetail
+          agent={agent}
+          isFavorite={favorites.includes(agent.id)}
+          onToggleFavorite={() => toggleFavorite(agent.id)}
+        />
+        {settingsPanel}
+      </>
     );
   }
 
@@ -72,6 +110,11 @@ export default function App() {
             <h1>Agency Agents</h1>
             <p className="sub">{data.agents.length} AI specialists, ready to help</p>
           </div>
+          <button className="settings-btn" onClick={() => setSettingsOpen({})} aria-label="Settings">
+            <svg viewBox="0 0 24 24" aria-hidden>
+              <path fill="currentColor" d="M19.4 13a7.5 7.5 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.3 7.3 0 0 0-1.7-1L15 3.5h-4l-.4 2.5a7.3 7.3 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7.5 7.5 0 0 0 0 2l-2 1.6 2 3.4 2.4-1c.5.4 1.1.7 1.7 1l.4 2.5h4l.4-2.5c.6-.3 1.2-.6 1.7-1l2.4 1 2-3.4-2-1.6ZM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z" transform="translate(-1 0)" />
+            </svg>
+          </button>
         </div>
         <div className="search">
           <svg viewBox="0 0 24 24" aria-hidden>
@@ -130,6 +173,7 @@ export default function App() {
           </ul>
         )}
       </main>
+      {settingsPanel}
     </div>
   );
 }
@@ -217,9 +261,7 @@ function AgentDetail({ agent, isFavorite, onToggleFavorite }: { agent: Agent; is
       </section>
       <p className="desc">{agent.description}</p>
       <div className="actions">
-        <button className="primary" disabled title="Coming in the next stage">
-          💬 Chat with this agent <span className="soon">soon</span>
-        </button>
+        <a className="btn primary" href={`#chat-${agent.id}`}>💬 Chat with this agent</a>
         <button onClick={copy}>{copied ? '✓ Copied' : '⧉ Copy prompt'}</button>
       </div>
       <article className="md">
